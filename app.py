@@ -16,14 +16,20 @@ st.set_page_config(
 # ==============================
 @st.cache_data
 def load_data():
-    path = os.path.join("data", "covid_clean.csv")
-    df = pd.read_csv(path, parse_dates=["tanggal"])
+    path = os.path.join("data", "covid_clean.csv.gz")
+
+    df = pd.read_csv(
+        path,
+        compression="gzip",
+        parse_dates=["tanggal"]
+    )
 
     # Pastikan tipe data numerik
     df["kasus_harian"] = pd.to_numeric(df["kasus_harian"], errors="coerce")
     df["kasus_kumulatif"] = pd.to_numeric(df["kasus_kumulatif"], errors="coerce")
 
     return df
+
 
 df = load_data()
 
@@ -632,4 +638,5 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True
+
 )
