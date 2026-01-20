@@ -4,12 +4,102 @@ import pandas as pd
 import plotly.express as px
 
 # ==============================
-# PAGE CONFIG
+# PAGE CONFIG - RESPONSIVE
 # ==============================
 st.set_page_config(
     page_title="COVID-19 Global Analytics Dashboard",
     layout="wide"
 )
+
+# ==============================
+# CUSTOM CSS UNTUK RESPONSIVE DESIGN
+# ==============================
+st.markdown("""
+<style>
+    /* Responsive container */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    /* Responsive text sizes */
+    @media screen and (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem !important;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.5rem !important;
+        }
+        h3 {
+            font-size: 1.3rem !important;
+        }
+        .stMetric {
+            padding: 10px !important;
+        }
+        .stMetric label {
+            font-size: 0.9rem !important;
+        }
+        .stMetric div[data-testid="stMetricValue"] {
+            font-size: 1.8rem !important;
+        }
+    }
+    
+    /* Responsive columns untuk KPI */
+    @media screen and (max-width: 768px) {
+        .stColumn {
+            padding: 5px !important;
+        }
+    }
+    
+    /* Sidebar responsive */
+    @media screen and (max-width: 768px) {
+        section[data-testid="stSidebar"] {
+            min-width: 100% !important;
+        }
+    }
+    
+    /* Plotly chart responsive */
+    .js-plotly-plot {
+        max-width: 100% !important;
+    }
+    
+    /* Dataframe responsive */
+    @media screen and (max-width: 768px) {
+        .dataframe {
+            font-size: 0.8rem !important;
+        }
+        div[data-testid="stDataFrameResizable"] {
+            overflow-x: auto;
+        }
+    }
+    
+    /* Metric cards untuk mobile */
+    @media screen and (max-width: 768px) {
+        .metric-container {
+            margin-bottom: 10px;
+        }
+    }
+    
+    /* Better spacing untuk mobile */
+    @media screen and (max-width: 768px) {
+        .stMarkdown {
+            padding: 0.5rem 0;
+        }
+        .element-container {
+            margin-bottom: 0.5rem !important;
+        }
+    }
+    
+    /* Footer responsive */
+    @media screen and (max-width: 768px) {
+        .stCaption {
+            font-size: 0.8rem !important;
+            text-align: center;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # ==============================
 # LOAD DATA (CACHED)
@@ -88,9 +178,20 @@ total_countries = df_filtered["negara"].nunique()
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric("Total Kasus", f"{total_cases:,}")
-col2.metric("Rata-rata Kasus Harian", f"{avg_daily:,}")
-col3.metric("Jumlah Negara", total_countries)
+with col1:
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.metric("Total Kasus", f"{total_cases:,}")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col2:
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.metric("Rata-rata Kasus Harian", f"{avg_daily:,}")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col3:
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.metric("Jumlah Negara", total_countries)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.divider()
 
@@ -118,6 +219,8 @@ fig_map = px.scatter_geo(
     color_continuous_scale="Reds"
 )
 
+# Responsive height untuk map
+fig_map.update_layout(height=500)
 st.plotly_chart(fig_map, use_container_width=True)
 
 st.markdown(
@@ -152,6 +255,8 @@ fig_trend = px.line(
     line_shape="spline"
 )
 
+# Responsive height untuk line chart
+fig_trend.update_layout(height=450)
 st.plotly_chart(fig_trend, use_container_width=True)
 
 # ==============================
@@ -221,9 +326,15 @@ if not df_filtered.empty:
         "kasus_harian": "Kasus Harian Tertinggi"
     })
     
+    # Format tanggal untuk display
+    df_peak_display["Tanggal Rekor"] = df_peak_display["Tanggal Rekor"].dt.strftime("%Y-%m-%d")
+    
+    # Responsive dataframe height
+    display_height = min(300, len(df_peak_display) * 35 + 40)
     st.dataframe(
         df_peak_display,
-        use_container_width=True
+        use_container_width=True,
+        height=display_height
     )
     
     # Analisis pola waktu rekor
@@ -293,7 +404,7 @@ df_others = pd.DataFrame({
 
 df_pie_final = pd.concat([df_top, df_others], ignore_index=True)
 
-# Pie (Donut) chart
+# Pie (Donut) chart dengan responsive height
 fig_pie = px.pie(
     df_pie_final,
     values="kasus_kumulatif",
@@ -311,7 +422,8 @@ fig_pie.update_traces(
 
 fig_pie.update_layout(
     legend_title_text="Negara",
-    margin=dict(t=80, b=40)
+    margin=dict(t=80, b=40),
+    height=500  # Responsive height
 )
 
 st.plotly_chart(fig_pie, use_container_width=True)
@@ -370,7 +482,7 @@ fig_top10 = px.bar(
 
 fig_top10.update_layout(
     yaxis=dict(categoryorder="total ascending"),
-    height=500
+    height=450  # Responsive height
 )
 
 st.plotly_chart(fig_top10, use_container_width=True)
@@ -442,6 +554,8 @@ if not df_filtered.empty:
             color_continuous_scale="Viridis"
         )
         
+        # Responsive height untuk bar chart
+        fig_bar_filtered.update_layout(height=400)
         st.plotly_chart(fig_bar_filtered, use_container_width=True)
         
         # Analisis distribusi terfilter
@@ -515,7 +629,8 @@ if not df_filtered.empty:
         fig_pie_filtered.update_layout(
             legend_title_text="Negara",
             margin=dict(t=80, b=40),
-            showlegend=True
+            showlegend=True,
+            height=450  # Responsive height
         )
         
         st.plotly_chart(fig_pie_filtered, use_container_width=True)
@@ -584,10 +699,13 @@ if not df_filtered.empty and len(negara_selected) > 0:
     
     if volatility_data:
         df_volatility = pd.DataFrame(volatility_data)
+        # Responsive dataframe height
+        volatility_height = min(300, len(df_volatility) * 35 + 40)
         st.dataframe(
             df_volatility,
             use_container_width=True,
-            hide_index=True
+            hide_index=True,
+            height=volatility_height
         )
         
         # Insight volatilitas
@@ -620,6 +738,8 @@ st.caption(
     Data terakhir diperbarui: {latest_global_date.date()}  
     Total negara dalam dataset: {len(df['negara'].unique())}  
     Rentang data: {df['tanggal'].min().date()} hingga {df['tanggal'].max().date()}
+    
+    <small>📱 Dashboard responsif untuk laptop & smartphone</small>
     """
 )
 
@@ -635,8 +755,12 @@ st.markdown(
     .stMarkdown h3 {
         color: #1f77b4;
     }
+    @media screen and (max-width: 768px) {
+        .stMarkdown h3 {
+            font-size: 1.2rem !important;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True
-
 )
