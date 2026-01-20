@@ -738,8 +738,6 @@ st.caption(
     Data terakhir diperbarui: {latest_global_date.date()}  
     Total negara dalam dataset: {len(df['negara'].unique())}  
     Rentang data: {df['tanggal'].min().date()} hingga {df['tanggal'].max().date()}
-    
-    <small>📱 Dashboard responsif untuk laptop & smartphone</small>
     """
 )
 
@@ -764,3 +762,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
