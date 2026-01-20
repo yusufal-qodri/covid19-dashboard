@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 # ==============================
-# PAGE CONFIG - RESPONSIVE
+# PAGE CONFIG
 # ==============================
 st.set_page_config(
     page_title="COVID-19 Global Analytics Dashboard",
@@ -16,87 +16,94 @@ st.set_page_config(
 # ==============================
 st.markdown("""
 <style>
-    /* Responsive container */
+    /* Base responsive settings untuk semua device */
     .main .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     
-    /* Responsive text sizes */
+    /* Mobile optimization (max-width: 768px) */
     @media screen and (max-width: 768px) {
+        /* Header responsive */
         h1 {
-            font-size: 1.8rem !important;
-            text-align: center;
-        }
-        h2 {
             font-size: 1.5rem !important;
+            text-align: center;
+            margin-bottom: 0.5rem !important;
         }
-        h3 {
+        
+        h2 {
             font-size: 1.3rem !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
         }
+        
+        h3 {
+            font-size: 1.1rem !important;
+            margin-top: 0.3rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+        
+        /* Metric cards untuk mobile */
         .stMetric {
-            padding: 10px !important;
+            padding: 8px !important;
+            margin: 5px 0 !important;
+            min-height: 85px;
         }
+        
         .stMetric label {
-            font-size: 0.9rem !important;
+            font-size: 0.8rem !important;
+            padding-bottom: 2px !important;
         }
+        
         .stMetric div[data-testid="stMetricValue"] {
-            font-size: 1.8rem !important;
+            font-size: 1.5rem !important;
+            padding-top: 2px !important;
         }
-    }
-    
-    /* Responsive columns untuk KPI */
-    @media screen and (max-width: 768px) {
-        .stColumn {
-            padding: 5px !important;
-        }
-    }
-    
-    /* Sidebar responsive */
-    @media screen and (max-width: 768px) {
+        
+        /* Sidebar untuk mobile */
         section[data-testid="stSidebar"] {
             min-width: 100% !important;
         }
-    }
-    
-    /* Plotly chart responsive */
-    .js-plotly-plot {
-        max-width: 100% !important;
-    }
-    
-    /* Dataframe responsive */
-    @media screen and (max-width: 768px) {
+        
+        /* Plotly charts responsive */
+        .js-plotly-plot, .plotly {
+            max-width: 100% !important;
+            height: 350px !important;
+        }
+        
+        /* Dataframe mobile friendly */
         .dataframe {
-            font-size: 0.8rem !important;
+            font-size: 0.75rem !important;
         }
-        div[data-testid="stDataFrameResizable"] {
-            overflow-x: auto;
+        
+        /* Layout columns untuk mobile */
+        .stColumn {
+            padding: 3px !important;
+            margin-bottom: 5px;
         }
-    }
-    
-    /* Metric cards untuk mobile */
-    @media screen and (max-width: 768px) {
-        .metric-container {
-            margin-bottom: 10px;
-        }
-    }
-    
-    /* Better spacing untuk mobile */
-    @media screen and (max-width: 768px) {
+        
+        /* Markdown text smaller on mobile */
         .stMarkdown {
-            padding: 0.5rem 0;
+            font-size: 0.85rem;
+            line-height: 1.3;
         }
+        
+        /* Divider spacing */
+        hr {
+            margin: 0.5rem 0 !important;
+        }
+        
+        /* Container untuk charts */
         .element-container {
             margin-bottom: 0.5rem !important;
         }
     }
     
-    /* Footer responsive */
-    @media screen and (max-width: 768px) {
-        .stCaption {
-            font-size: 0.8rem !important;
-            text-align: center;
-        }
+    /* Better touch targets for mobile */
+    button, select, input, .stMultiSelect, .stDateInput {
+        min-height: 44px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -178,20 +185,9 @@ total_countries = df_filtered["negara"].nunique()
 
 col1, col2, col3 = st.columns(3)
 
-with col1:
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-    st.metric("Total Kasus", f"{total_cases:,}")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-    st.metric("Rata-rata Kasus Harian", f"{avg_daily:,}")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col3:
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-    st.metric("Jumlah Negara", total_countries)
-    st.markdown('</div>', unsafe_allow_html=True)
+col1.metric("Total Kasus", f"{total_cases:,}")
+col2.metric("Rata-rata Kasus Harian", f"{avg_daily:,}")
+col3.metric("Jumlah Negara", total_countries)
 
 st.divider()
 
@@ -753,13 +749,8 @@ st.markdown(
     .stMarkdown h3 {
         color: #1f77b4;
     }
-    @media screen and (max-width: 768px) {
-        .stMarkdown h3 {
-            font-size: 1.2rem !important;
-        }
-    }
     </style>
     """,
     unsafe_allow_html=True
-)
 
+)
